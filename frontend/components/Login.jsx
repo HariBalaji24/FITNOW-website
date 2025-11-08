@@ -1,7 +1,13 @@
 import React, { useState } from "react";
+import axios from axios
 
 const Login = () => {
   const [isSignup, setIsSignup] = useState(true);
+  const [user,setuser] = useState({name:"",email:"",password:""})
+
+  const handlechange = (e) =>{
+     
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-950 p-4">
@@ -13,24 +19,34 @@ const Login = () => {
         <form className="space-y-4">
           {isSignup && (
             <input
+              name="name"
               type="text"
               placeholder="Full Name"
               className="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring"
+              value={user.name}
+              onChange={handlechange}
             />
           )}
           <input
+            name="email"
             type="email"
             placeholder="Email"
             className="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring"
+            value={user.email}
+              onChange={handlechange}
           />
 
           <input
+            name="password"
             type="password"
             placeholder="Password"
             className="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring"
+            value={user.password}
+              onChange={handlechange}
           />
 
           <button
+            
             type="submit"
             className="w-full bg-blue-600 cursor-pointer text-white py-2 rounded-md hover:bg-blue-700 transition"
           >
