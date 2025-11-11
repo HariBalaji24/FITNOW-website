@@ -1,2 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
 @import "tailwindcss";
 @plugin "daisyui";
+
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+
+
+
+.bg-glass-aurora {
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-glass-aurora::before,
+.bg-glass-aurora::after {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  filter: blur(120px);
+  opacity: 0.4;
+  animation: floatAurora 12s infinite alternate ease-in-out;
+}
+
+.bg-glass-aurora::before {
+  background: #4f46e5; /* Indigo */
+  top: -10%;
+  left: -20%;
+}
+
+.bg-glass-aurora::after {
+  background: #06b6d4; /* Cyan */
+  bottom: -10%;
+  right: -20%;
+}
+
+@keyframes floatAurora {
+  0%   { transform: translate(0px, 0px); }
+  100% { transform: translate(60px, -60px); }
+}
+
+/* Glass card enhancement */
+.glass-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 0 30px rgba(0,0,0,0.4);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+/* Hide number input arrows */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

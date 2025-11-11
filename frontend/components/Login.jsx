@@ -1,84 +1,131 @@
-import React, { useState } from "react";
-import axios from "axios"
+import React, { useState, useContext } from "react";
+import axios from "axios";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
+import { Context } from "../context/context";
 
 const Login = () => {
+  const { setusername, setid,id } = useContext(Context);
   const [isSignup, setIsSignup] = useState(true);
-  const [user,setuser] = useState({name:"",email:"",password:""})
+  const [user, setuser] = useState({ name: "", email: "", password: "" });
 
-  const handlechange = (e) =>{
-     
-  }
+  const navigate = useNavigate();
+
+  const responsegoogle = async (authResult) => {
+    try {
+      if (authResult.code) {
+        const response = await axios.get(
+          `http://localhost:3000/google?code=${authResult.code}`
+        );
+        const { token, user } = response.data;
+        localStorage.setItem("auth-token", token);
+        setusername(user.name);
+        if(isSignup){
+          navigate("/details");
+        }
+        else{
+          navigate("/")
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const googlelogin = useGoogleLogin({
+    onSuccess: responsegoogle,
+    onError: responsegoogle,
+    flow: "auth-code",
+  });
+
+  const handlesubmit = async (e) => {
+    e.preventDefault();
+    const url = `http://localhost:3000/${isSignup ? "signin" : "login"}`;
+    const payload = {
+      email: user.email,
+      password: user.password,
+      ...(isSignup && { name: user.name }),
+    };
+
+    try {
+      const res = await axios.post(url, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      localStorage.setItem("auth-token", res.data.token);
+      if (isSignup) {
+        navigate("/details");
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950 p-4">
-      <div className="w-full max-w-md bg-gray-800 rounded-xl shadow-lg p-8 space-y-6">
-        <h2 className="text-2xl font-semibold text-center">
-          {isSignup ? "Create an Account" : "Welcome Back"}
+    <div className="min-h-screen flex items-center justify-center bg-glass-aurora p-5">
+      <div className="w-full max-w-md glass-card p-8 rounded-2xl animate-slide-up">
+        <h2 className="text-center text-2xl font-bold text-white tracking-wide mb-6">
+          {isSignup ? "Create Account" : "Welcome Back"}
         </h2>
 
-        <form className="space-y-4">
+        <form className="space-y-5" onSubmit={handlesubmit}>
           {isSignup && (
             <input
-              name="name"
               type="text"
+              name="name"
               placeholder="Full Name"
-              className="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring"
               value={user.name}
-              onChange={handlechange}
+              onChange={(e) => setuser({ ...user, name: e.target.value })}
+              className="w-full p-3 rounded-lg bg-white/10 border border-white/30 text-white placeholder-gray-300 input-glow transition"
             />
           )}
+
           <input
-            name="email"
             type="email"
-            placeholder="Email"
-            className="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring"
+            name="email"
+            placeholder="Email Address"
             value={user.email}
-              onChange={handlechange}
+            onChange={(e) => setuser({ ...user, email: e.target.value })}
+            className="w-full p-3 rounded-lg bg-white/10 border border-white/30 text-white placeholder-gray-300 input-glow transition"
           />
 
           <input
-            name="password"
             type="password"
+            name="password"
             placeholder="Password"
-            className="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring"
             value={user.password}
-              onChange={handlechange}
+            onChange={(e) => setuser({ ...user, password: e.target.value })}
+            className="w-full p-3 rounded-lg bg-white/10 border border-white/30 text-white placeholder-gray-300 input-glow transition"
           />
 
-          <button
-            
-            type="submit"
-            className="w-full bg-blue-600 cursor-pointer text-white py-2 rounded-md hover:bg-blue-700 transition"
-          >
+          <button className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg btn-lift transition">
             {isSignup ? "Sign Up" : "Log In"}
           </button>
         </form>
 
-        <div className="flex items-center justify-center">
-          <span className="text-sm text-white">
-            {isSignup ? "Already have an account?" : "Don't have an account?"}
-          </span>
+        <div className="text-center text-gray-300 mt-4">
+          {isSignup ? "Already have an account?" : "New here?"}
           <button
             onClick={() => setIsSignup(!isSignup)}
-            className="text-blue-600 cursor-pointer text-sm ml-2 hover:underline"
+            className="text-blue-400 ml-2 cursor-pointer "
           >
             {isSignup ? "Login" : "Sign Up"}
           </button>
         </div>
 
-        <div className="flex items-center justify-center">
-          <div className="border-t w-1/3" />
-          <span className="text-sm text-white px-2">or</span>
-          <div className="border-t w-1/3" />
-        </div>
+        <div className="text-center text-gray-500 my-4">or</div>
 
-        <button className="w-full border border-gray-300 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-blue-600 cursor-pointer transition">
+        <button
+          onClick={googlelogin}
+          className="w-full py-3 border border-gray-500 hover:border-blue-400 hover:bg-blue-600 text-white rounded-lg transition btn-lift flex justify-center items-center gap-2"
+        >
           <img
             src="https://www.svgrepo.com/show/475656/google-color.svg"
-            alt="Google"
-            className="w-5 h-5"
+            className="w-5"
           />
-          <span>Continue with Google</span>
+          Continue with Google
         </button>
       </div>
     </div>
