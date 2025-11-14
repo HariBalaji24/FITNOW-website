@@ -55,6 +55,7 @@ const Login = () => {
       const data = response.data
       if (data.success && data.token) {
         localStorage.setItem("auth-token",data.token)
+        setid(data.userid)
         toast.success(`${isSignup ? "Sign In " : "Log In"} Successful`,{
           position: "top-center",
           duration:1000,
@@ -83,7 +84,7 @@ const Login = () => {
       });
     }
   };
-
+console.log(id)
   return (
     <motion.div
       initial={{ opacity: 0, y: -40 }}

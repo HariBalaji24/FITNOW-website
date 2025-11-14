@@ -31,7 +31,7 @@ const signin = async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.status(200).json({ success:true, signin:true, token: token });
+    res.status(200).json({ success:true, signin:true,userid:result.rows[0].user_id, token: token });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -54,7 +54,7 @@ const login = async (req, res) => {
   const token = jwt.sign({ id: userid }, secretkey, {
     expiresIn: "7d",
   });
-  res.json({ success:true, signin:false, token: token });
+  res.json({ success:true, signin:false,userid:result.rows[0].user_id, token: token });
 };
 
 const adddetails = async (req, res) => {

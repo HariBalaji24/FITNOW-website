@@ -5,9 +5,9 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const Workouts = () => {
-  const { loading, id, token } = useContext(Context);
+  const { id, token } = useContext(Context);
   const [workouts, setWorkouts] = useState(null);
-  
+  const [loading,setloading] = useState(false)
 
   useEffect(() => {
     async function fetchWorkouts() {
@@ -15,14 +15,14 @@ const Workouts = () => {
       try {
         const response = await axios.get(`http://localhost:3000/getworkouts/${id}`);
         setWorkouts(response.data);
-        
+        setloading(true)
       } catch (error) {
         console.log(error);
       }
     }
     fetchWorkouts();
   }, [id]);
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -64,14 +64,14 @@ const Workouts = () => {
       {token && (
         <>
           {/* Loading message */}
-          {loading && (
+          {!loading && (
             <div className="text-gray-300 mt-20 font-semibold text-lg">
               Crafting your personalized fitness roadmap. Hold tight greatness is loading...
             </div>
           )}
 
           {/* Workouts Grid */}
-          {!loading && workouts && (
+          {loading && workouts && (
             <div
               className="
                 mt-20
