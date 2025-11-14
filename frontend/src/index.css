@@ -7,40 +7,21 @@ body {
   font-family: "Poppins", sans-serif;
 }
 
-
-
-
-.bg-glass-aurora {
-  position: relative;
-  overflow: hidden;
+.aurora-bg {
+  background: radial-gradient(circle at 20% 20%, rgba(45, 15, 80, 0.6), transparent 60%),
+              radial-gradient(circle at 80% 30%, rgba(30, 85, 130, 0.5), transparent 60%),
+              radial-gradient(circle at 50% 80%, rgba(120, 30, 160, 0.5), transparent 70%);
+  background-color: #0A0A12;
+  animation: auroraMove 16s ease-in-out infinite alternate;
 }
 
-.bg-glass-aurora::before,
-.bg-glass-aurora::after {
-  content: "";
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  filter: blur(120px);
-  opacity: 0.4;
-  animation: floatAurora 12s infinite alternate ease-in-out;
-}
-
-.bg-glass-aurora::before {
-  background: #4f46e5; /* Indigo */
-  top: -10%;
-  left: -20%;
-}
-
-.bg-glass-aurora::after {
-  background: #06b6d4; /* Cyan */
-  bottom: -10%;
-  right: -20%;
-}
-
-@keyframes floatAurora {
-  0%   { transform: translate(0px, 0px); }
-  100% { transform: translate(60px, -60px); }
+@keyframes auroraMove {
+  0% {
+    background-position: 10% 20%, 70% 30%, 50% 90%;
+  }
+  100% {
+    background-position: 20% 30%, 60% 20%, 55% 70%;
+  }
 }
 
 /* Glass card enhancement */

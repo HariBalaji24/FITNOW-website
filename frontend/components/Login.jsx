@@ -3,9 +3,11 @@ import axios from "axios";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../context/context";
+import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 const Login = () => {
-  const { setusername, setid,id } = useContext(Context);
+  const { setusername, setid, id } = useContext(Context);
   const [isSignup, setIsSignup] = useState(true);
   const [user, setuser] = useState({ name: "", email: "", password: "" });
 
@@ -20,11 +22,10 @@ const Login = () => {
         const { token, user } = response.data;
         localStorage.setItem("auth-token", token);
         setusername(user.name);
-        if(isSignup){
+        if (isSignup) {
           navigate("/details");
-        }
-        else{
-          navigate("/")
+        } else {
+          navigate("/");
         }
       }
     } catch (error) {
@@ -48,87 +49,162 @@ const Login = () => {
     };
 
     try {
-      const res = await axios.post(url, payload, {
+      const response = await axios.post(url, payload, {
         headers: { "Content-Type": "application/json" },
       });
-
-      localStorage.setItem("auth-token", res.data.token);
-      if (isSignup) {
-        navigate("/details");
-      } else {
-        navigate("/");
+      const data = response.data
+      if (data.success && data.token) {
+        localStorage.setItem("auth-token",data.token)
+        toast.success(`${isSignup ? "Sign In " : "Log In"} Successful`,{
+          position: "top-center",
+          duration:1000,
+          icon:"✅"
+        })
+        if(data.signin) {
+          setTimeout(()=>{navigate("/details")},1000)
+        }
+        else{
+          setTimeout(()=>{navigate("/"); window.location.reload()},1000)
+        }
       }
-    } catch (err) {
-      console.log(err);
+      else{
+        toast.error(`${isSignup ? "Sign In " : "Log In"} failed. Try again`,{
+          position: "top-center",
+          duration:1000,
+          icon:"❌"
+        })
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong", {
+        position: "top-center",
+        duration: 1000,
+        style: { fontSize: "16px" },
+        icon: "❌",
+      });
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-glass-aurora p-5">
-      <div className="w-full max-w-md glass-card p-8 rounded-2xl animate-slide-up">
-        <h2 className="text-center text-2xl font-bold text-white tracking-wide mb-6">
+    <motion.div
+      initial={{ opacity: 0, y: -40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="min-h-screen flex items-center justify-center px-5 relative"
+    >
+      {/* Background blur glow */}
+      <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }}
+              className="absolute inset-0 -z-10 pointer-events-none"
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 1.4, delay: 0.4, ease: "easeOut" }}
+                className="absolute w-[400px] h-[400px] bg-purple-600 blur-[150px] top-10 left-1/3"
+              />
+      
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 1.4, delay: 0.8, ease: "easeOut" }}
+                className="absolute w-[400px] h-[400px] bg-blue-500 blur-[170px] bottom-10 right-1/3"
+              />
+            </motion.div>
+
+      {/* Form Card */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
+        className="w-full max-w-md bg-white/10 backdrop-blur-lg border border-white/20 p-8 rounded-2xl shadow-xl"
+      >
+        <motion.h2
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-center text-2xl font-bold text-white tracking-wide mb-6"
+        >
           {isSignup ? "Create Account" : "Welcome Back"}
-        </h2>
+        </motion.h2>
 
         <form className="space-y-5" onSubmit={handlesubmit}>
           {isSignup && (
-            <input
+            <motion.input
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.25 }}
               type="text"
-              name="name"
               placeholder="Full Name"
               value={user.name}
               onChange={(e) => setuser({ ...user, name: e.target.value })}
-              className="w-full p-3 rounded-lg bg-white/10 border border-white/30 text-white placeholder-gray-300 input-glow transition"
+              className="w-full p-3 rounded-lg bg-white/10 border border-white/25 text-white placeholder-gray-300 focus:border-purple-400 transition"
             />
           )}
 
-          <input
+          <motion.input
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
             type="email"
-            name="email"
             placeholder="Email Address"
             value={user.email}
             onChange={(e) => setuser({ ...user, email: e.target.value })}
-            className="w-full p-3 rounded-lg bg-white/10 border border-white/30 text-white placeholder-gray-300 input-glow transition"
+            className="w-full p-3 rounded-lg bg-white/10 border border-white/25 text-white placeholder-gray-300 focus:border-purple-400 transition"
           />
 
-          <input
+          <motion.input
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.35 }}
             type="password"
-            name="password"
             placeholder="Password"
             value={user.password}
             onChange={(e) => setuser({ ...user, password: e.target.value })}
-            className="w-full p-3 rounded-lg bg-white/10 border border-white/30 text-white placeholder-gray-300 input-glow transition"
+            className="w-full p-3 rounded-lg bg-white/10 border border-white/25 text-white placeholder-gray-300 focus:border-purple-400 transition"
           />
 
-          <button className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg btn-lift transition">
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            className="w-full py-3 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-lg transition"
+          >
             {isSignup ? "Sign Up" : "Log In"}
-          </button>
+          </motion.button>
         </form>
 
         <div className="text-center text-gray-300 mt-4">
           {isSignup ? "Already have an account?" : "New here?"}
           <button
             onClick={() => setIsSignup(!isSignup)}
-            className="text-blue-400 ml-2 cursor-pointer "
+            className="text-purple-300 ml-2 hover:text-purple-400 transition underline-offset-4 hover:underline"
           >
             {isSignup ? "Login" : "Sign Up"}
           </button>
         </div>
 
-        <div className="text-center text-gray-500 my-4">or</div>
+        <div className="flex items-center gap-3 text-gray-400 mt-4 text-sm">
+          <div className="flex-1 h-px bg-white/30"></div>
+          <span>or</span>
+          <div className="flex-1 h-px bg-white/30"></div>
+        </div>
 
-        <button
+        <motion.button
           onClick={googlelogin}
-          className="w-full py-3 border border-gray-500 hover:border-blue-400 hover:bg-blue-600 text-white rounded-lg transition btn-lift flex justify-center items-center gap-2"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.96 }}
+          className="w-full py-3 mt-3 border border-gray-400 hover:border-purple-400 hover:bg-purple-500 hover:text-white text-white rounded-lg transition flex justify-center items-center gap-2"
         >
           <img
             src="https://www.svgrepo.com/show/475656/google-color.svg"
             className="w-5"
           />
-          Continue with Google
-        </button>
-      </div>
-    </div>
+          Google
+        </motion.button>
+      </motion.div>
+    </motion.div>
   );
 };
 

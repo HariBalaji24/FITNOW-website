@@ -1,10 +1,9 @@
 import React, { useContext } from "react";
-import { Context } from "../context/context";
 import PillNav from "../animations/pillnav";
+import { Context } from "../context/context";
 
 const Navbar = () => {
-  const { token } = useContext(Context);
-
+  const {id,token} = useContext(Context)
   const logout = () => {
     console.log("clicked")
     localStorage.removeItem("auth-token");

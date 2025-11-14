@@ -18,20 +18,20 @@ const signin = async (req, res) => {
       email,
     ]);
     if (olduser.rows.length > 0) {
-      return res.json({ message: "user already exists" });
+      return res.json({ message: "User already exists" });
     }
     const hashedpassword = await bcrypt.hash(password, 10);
     const result = await db.query(
-      `INSERT INTO userdetails (name,email,password) VALUES ($1,$2,$3)`,
+      `INSERT INTO userdetails (name,email,password) VALUES ($1,$2,$3) returning user_id`,
       [name, email, hashedpassword]
     );
 
-    const newuser = await db.query("SELECT user_id from userdetails");
-    const token = jwt.sign({ id: newuser.rows[0]._id }, secretkey, {
+    const userid = result.rows[0].user_id
+    const token = jwt.sign({ id: userid }, secretkey, {
       expiresIn: "7d",
     });
 
-    res.status(200).json({ token: token });
+    res.status(200).json({ success:true, signin:true, token: token });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -45,17 +45,16 @@ const login = async (req, res) => {
   if (result.rows.length === 0) {
     res.json({ message: "no such email exists" });
   }
-  const user = result.rows[0];
+  const user = result.rows[0]
   const match = await bcrypt.compare(password, user.password);
-  const newuser = await db.query("SELECT user_id from userdetails");
-  const token = jwt.sign({ id: newuser.rows[0]._id }, secretkey, {
+  if (!match) {res.json({ message: "Password is Incorrect" });
+    
+  } 
+  const userid = user.user_id
+  const token = jwt.sign({ id: userid }, secretkey, {
     expiresIn: "7d",
   });
-  if (match) {
-    res.json({ message: "user logged in", user: user, token: token });
-  } else {
-    res.json({ message: "password is incorrect" });
-  }
+  res.json({ success:true, signin:false, token: token });
 };
 
 const adddetails = async (req, res) => {
@@ -64,6 +63,7 @@ const adddetails = async (req, res) => {
     "insert into personalinfo (user_id,age,gender,height,weight,bmi) values ($1,$2,$3,$4,$5,$6)",
     [userid, age, gender, height, weight, bmi]
   );
+  res.status(200).json({message:"details saved"})
 };
 
 const getdetails = async (req, res) => {
@@ -116,7 +116,7 @@ export const getid = async (req, res) => {
     const authHeader = req.headers.authorization;
     if (!authHeader)
       return res.status(401).json({ message: "No token provided" });
-    const token = authHeader.split(" ")[1]; // Extract actual token
+    const token = authHeader.split(" ")[1]; 
     const decoded = jwt.verify(token, secretkey)
     const result = await db.query(
       "SELECT * FROM userdetails WHERE user_id=$1",

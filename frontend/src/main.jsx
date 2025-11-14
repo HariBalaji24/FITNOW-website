@@ -8,15 +8,20 @@ import Plasma from "../animations/aurora.jsx";
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <ContextProvider>
-      <App />
-      <div className="z-[-10]" style={{ width: "100%", height: "100vmin", position: "relative" }}>
-        <Plasma
-          color="B13BFF"
-          speed={0.6}
-          direction="forward"
-          scale={1.1}
-          opacity={0.8}
-        />
+
+      
+      <div className="relative w-full min-h-screen">
+        <div className="fixed inset-0 -z-10 pointer-events-none">
+          <Plasma 
+            color="B13BFF"
+            speed={0.55}
+            direction="forward"
+            scale={1}        // ⭐ More responsive & fills big screens
+            opacity={0.7}      // ⭐ Slightly dim for cleaner UI
+          />
+        </div>
+        
+        <App />
       </div>
       
     </ContextProvider>
