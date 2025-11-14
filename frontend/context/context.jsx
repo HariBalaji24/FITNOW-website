@@ -6,14 +6,14 @@ export const Context = createContext();
 export const ContextProvider = ({ children }) => {
   const token = localStorage.getItem("auth-token");
   const [id, setid] = useState(null);
-  const [name, setname] = useState(null);
   const [details, setDetails] = useState(null);
 
+  const endpoint = ""
   useEffect(() => {
     async function fetchid() {
       if (!token) return;
       try {
-        const res = await axios.get("http://localhost:3000/getid", {
+        const res = await axios.get("https://fitnow-website-1.onrender.com/getid", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setid(res.data.user_id);
@@ -29,7 +29,7 @@ export const ContextProvider = ({ children }) => {
     if (!id) return;
     async function fetchWorkout() {
       try {
-        const url = `http://localhost:3000/userdetails/${id}`;
+        const url = `https://fitnow-website-1.onrender.com/userdetails/${id}`;
         const response = await axios.get(url);
         setDetails(response.data);
       } catch (error) {
@@ -44,7 +44,7 @@ export const ContextProvider = ({ children }) => {
 
     async function getWorkout() {
       try {
-        const url = "http://localhost:3000/workout-plan";
+        const url = "https://fitnow-website-1.onrender.com/workout-plan";
         const response = await axios.post(url, details);
       } catch (error) {
         console.error("Error generating workout plan:", error);

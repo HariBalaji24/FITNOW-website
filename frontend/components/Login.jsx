@@ -17,7 +17,7 @@ const Login = () => {
     try {
       if (authResult.code) {
         const response = await axios.get(
-          `http://localhost:3000/google?code=${authResult.code}`
+          `https://fitnow-website-1.onrender.com/google?code=${authResult.code}`
         );
         const { token, user } = response.data;
         localStorage.setItem("auth-token", token);
@@ -41,7 +41,7 @@ const Login = () => {
 
   const handlesubmit = async (e) => {
     e.preventDefault();
-    const url = `http://localhost:3000/${isSignup ? "signin" : "login"}`;
+    const url = `https://fitnow-website-1.onrender.com/${isSignup ? "signin" : "login"}`;
     const payload = {
       email: user.email,
       password: user.password,

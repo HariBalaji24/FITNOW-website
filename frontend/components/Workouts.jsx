@@ -13,7 +13,7 @@ const Workouts = () => {
     async function fetchWorkouts() {
       if (!id) return;
       try {
-        const response = await axios.get(`http://localhost:3000/getworkouts/${id}`);
+        const response = await axios.get(`https://fitnow-website-1.onrender.com/getworkouts/${id}`);
         setWorkouts(response.data);
         setloading(true)
       } catch (error) {

@@ -119,7 +119,7 @@ Return ONLY a clean Markdown table:
 const getallworkouts = async (req,res) => {
   try {
     const {user_id} = req.params
-    const result = await db.query("select * from workouts where user_id=$1 ",[user_id])
+    const result = await db.query("select * from workouts where user_id=$1 ORDER BY day::int ASC ",[user_id])
     return res.json(result.rows)
   } catch (error) {
     

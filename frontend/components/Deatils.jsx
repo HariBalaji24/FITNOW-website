@@ -34,7 +34,7 @@ const Details = () => {
     e.preventDefault();
     try {
       form.userid = id;
-      await axios.post("http://localhost:3000/adddetails", form, {
+      await axios.post("https://fitnow-website-1.onrender.com/adddetails", form, {
         headers: { "Content-Type": "application/json" },
       });
 
